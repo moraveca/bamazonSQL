@@ -1,1 +1,1 @@
-# bamazonSQL
+This node app will utilize mySQL to run an online marketplace.
