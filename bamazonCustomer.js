@@ -26,8 +26,8 @@ function listItems() {
         // console.log(res);
 
         for (i = 0; i < res.length; i++) {
-            console.log("Item #" + res[i].item_id + ": Product: " +
-                res[i].product_name + "- Price: $" + res[i].price);
+            console.log("Item #" + res[i].item_id + ": " +
+            res[i].product_name + " - Price: $" + res[i].price);
         };
         askQuestion();
     });
