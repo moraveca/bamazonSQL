@@ -84,9 +84,25 @@ function buyProduct(id, newStock, userCost, userBoughtNum, itemName) {
             // console.log(res);
             console.log("You have purchased " + userBoughtNum + " " +
                 itemName + " for the price of $" + userCost + ". Thank you!");
-            buyAgain();
+            updateProductSales(id, userCost);    
+            // buyAgain();
         });
 };
+
+function updateProductSales(id, price) {
+    connection.query("SELECT product_sales FROM products WHERE item_id =" + id, function(err, res) {
+        if (err) throw err;
+        // console.log(res);
+        var updatedSales = res[0].product_sales + price;
+        // console.log("updatedSales: ", updatedSales);
+
+        connection.query("UPDATE products SET product_sales = " + updatedSales + 
+            " WHERE item_id =" + id, function (err, results) {
+                if (err) throw err;
+                buyAgain();
+            });
+    })
+}
 
 function buyAgain() {
     inquirer

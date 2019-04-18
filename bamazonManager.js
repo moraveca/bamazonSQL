@@ -94,13 +94,19 @@ function listProducts() {
 
 function showLow() {
     connection.query("SELECT * FROM products WHERE stock_quantity BETWEEN 0 AND 5", function (err, res) {
-        for (i = 0; i < res.length; i++) {
-            console.log("Item #" + res[i].item_id + ": " +
-                res[i].product_name + " - Price: $" + res[i].price +
-                " (Current inventory: " + res[i].stock_quantity + ")");
-        };
-        console.log(lineBreak);
-        displayMenu();
+        if (res.length === 0) {
+            console.log("All items are well stocked!");
+            console.log(lineBreak);
+            displayMenu();
+        } else {
+            for (i = 0; i < res.length; i++) {
+                console.log("Item #" + res[i].item_id + ": " +
+                    res[i].product_name + " - Price: $" + res[i].price +
+                    " (Current inventory: " + res[i].stock_quantity + ")");
+            };
+            console.log(lineBreak);
+            displayMenu();
+        }
     });
 };
 
@@ -146,5 +152,49 @@ function updateStock(itemNum, newStock, product_name) {
 };
 
 function newProduct() {
-    
+    inquirer
+        .prompt([
+            {
+                type: "input",
+                message: "What product would you like to add?",
+                name: "product_name"
+            },
+            {
+                type: "input",
+                message: "In what department is your product located?",
+                name: "department_name",
+            },
+            {
+                type: "input",
+                message: "What price will this product be sold at (ex. 2.95)?",
+                name: "price",
+            },
+            {
+                type: "input",
+                message: "How many would you like to add to your inventory?",
+                name: "stock_quantity",
+            },
+        ])
+        .then(answers => {
+            // console.log(answers);
+            createItem(answers.product_name, answers.department_name,
+                answers.price, answers.stock_quantity);
+        });
+};
+
+function createItem(product_name, department_name, price, stock_quantity) {
+    connection.query("INSERT INTO products SET ?",
+        {
+            product_name: product_name,
+            department_name: department_name,
+            price: price,
+            stock_quantity: stock_quantity
+        },
+        function (err, res) {
+            if (err) throw err;
+
+            console.log("You have added " + product_name + "!")
+            displayMenu();
+        }
+    );
 }
