@@ -18,17 +18,20 @@ var connection = mysql.createConnection({
     socketPath: "/Applications/MAMP/tmp/mysql/mysql.sock"
 });
 
+var lineBreak = "----------------------------------------------------------------------------------";
+
 listItems();
 
 function listItems() {
     connection.query("SELECT * FROM products", function (err, res) {
         if (err) throw err;
         // console.log(res);
-
+        console.log(lineBreak);
         for (i = 0; i < res.length; i++) {
             console.log("Item #" + res[i].item_id + ": " +
-            res[i].product_name + " - Price: $" + res[i].price);
+                res[i].product_name + " - Price: $" + res[i].price);
         };
+        console.log(lineBreak);
         askQuestion();
     });
 };
@@ -65,12 +68,13 @@ function checkQuantity(id, userBoughtNum) {
         var itemName = res[arrayId].product_name;
 
         if (stockNum >= userBoughtNum) {
-            console.log("you can buy it!");
+            // console.log("you can buy it!");
 
             var newStockNum = stockNum - userBoughtNum;
             buyProduct(id, newStockNum, userCost, userBoughtNum, itemName);
         } else {
             console.log("Insufficient quantity, sorry.");
+            console.log(lineBreak);
             buyAgain();
         }
     });
@@ -82,21 +86,23 @@ function buyProduct(id, newStock, userCost, userBoughtNum, itemName) {
         " WHERE item_id =" + id, function (err, res) {
             if (err) throw err;
             // console.log(res);
+            console.log(lineBreak);
             console.log("You have purchased " + userBoughtNum + " " +
                 itemName + " for the price of $" + userCost + ". Thank you!");
-            updateProductSales(id, userCost);    
+            console.log(lineBreak);
+            updateProductSales(id, userCost);
             // buyAgain();
         });
 };
 
 function updateProductSales(id, price) {
-    connection.query("SELECT product_sales FROM products WHERE item_id =" + id, function(err, res) {
+    connection.query("SELECT product_sales FROM products WHERE item_id =" + id, function (err, res) {
         if (err) throw err;
         // console.log(res);
         var updatedSales = res[0].product_sales + price;
         // console.log("updatedSales: ", updatedSales);
 
-        connection.query("UPDATE products SET product_sales = " + updatedSales + 
+        connection.query("UPDATE products SET product_sales = " + updatedSales +
             " WHERE item_id =" + id, function (err, results) {
                 if (err) throw err;
                 buyAgain();
@@ -119,7 +125,9 @@ function buyAgain() {
             if (answers.buyAgain === "Yes") {
                 listItems();
             } else {
+                console.log(lineBreak);
                 console.log("Thanks for shopping. Come again!");
+                console.log(lineBreak);
                 connection.end();
             }
         });
